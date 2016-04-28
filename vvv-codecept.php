@@ -15,17 +15,22 @@ if (!file_exists($vvconfig)) {
     }
 }
 
-if (command_exist('composer')) {
-    echo "Installing WP-Browser with composer\n";
-    echo exec('composer require --dev lucatume/wp-browser');
-}
-
 $vvconfig = json_decode(file_get_contents($vvconfig), true);
 
 $path = str_replace($vvconfig['path'] . '/www/', '', $_SERVER['PWD']);
 $path = explode('/', $path);
 
-if (command_exist('wpcept')) {
+if(!isset($path[4])) {
+    echo "This is not a VVV path!\n";
+    die();
+}
+
+if (command_exist('composer')) {
+    echo "Installing WP-Browser with composer\n";
+    echo exec('composer require --dev lucatume/wp-browser');
+}
+
+if (file_exists('./vendor/bin/wpcept')) {
     echo "Initialize Codeception\n";
     echo exec('./vendor/bin/wpcept bootstrap');
 }
@@ -90,5 +95,8 @@ modules:
 ";
 
 file_put_contents('codeception.yml', $codeception);
+
+$db = str_replace('domain-replace', $path[0], file_get_contents('https://raw.githubusercontent.com/Mte90/VVV-Codecept/master/dump.sql'));
+file_put_contents('tests/_data/dump.sql', $db);
 
 echo "\nDone\n";
