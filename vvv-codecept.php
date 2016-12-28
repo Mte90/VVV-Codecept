@@ -39,7 +39,6 @@ if(isset($composer['config']['vendor-dir'])) {
 
 if (file_exists($composer_path.'bin/wpcept')) {
     echo "Initialize Codeception\n";
-    echo $composer_path.'bin/wpcept bootstrap';
     echo exec($composer_path.'bin/wpcept bootstrap');
 }
 
@@ -125,7 +124,7 @@ define('DB_COLLATE', '');
 $"."table_prefix = 'wp_';
 ";
 
-file_put_contents('wp-config-test.php', $codeception);
+file_put_contents('wp-config-test.php', $wpconfig);
 
 $db = str_replace('domain-replace', $path[0], file_get_contents('https://raw.githubusercontent.com/Mte90/VVV-Codecept/master/dump.sql'));
 file_put_contents('tests/_data/dump.sql', $db);
