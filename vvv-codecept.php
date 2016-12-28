@@ -25,14 +25,22 @@ if(!isset($path[4])) {
     die();
 }
 
-if (command_exist('composer')) {
+$composer = json_decode(file_get_contents("composer.json"), true);
+
+if (!isset($composer['require-dev']['lucatume/wp-browser']) && command_exist('composer')) {
     echo "Installing WP-Browser with composer\n";
     echo exec('composer require --dev lucatume/wp-browser');
 }
 
-if (file_exists('./vendor/bin/wpcept')) {
+$composer_path = './vendor/';
+if(isset($composer['config']['vendor-dir'])) {
+    $composer_path = './' . $composer['config']['vendor-dir'];
+}
+
+if (file_exists($composer_path.'bin/wpcept')) {
     echo "Initialize Codeception\n";
-    echo exec('./vendor/bin/wpcept bootstrap');
+    echo $composer_path.'bin/wpcept bootstrap';
+    echo exec($composer_path.'bin/wpcept bootstrap');
 }
 
 $codeception = "actor: Tester
@@ -47,11 +55,6 @@ settings:
     memory_limit: 1024M
 modules:
     config:
-        Db:
-            dsn: 'mysql:host=192.168.50.4;dbname=wordpress_unit_tests'
-            user: wp
-            password: wp
-            dump: tests/_data/dump.sql
         WPBrowser:
             url: 'http://".$path[0].".dev'
             adminUsername: admin
